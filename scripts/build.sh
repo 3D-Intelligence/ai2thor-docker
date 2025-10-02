@@ -41,10 +41,20 @@ else
     exit 1
 fi
 
+echo "CUDA_VERSION=$CUDA_VERSION"
+# Map CUDA versions to available Docker tags
+case $CUDA_VERSION in
+    11.4.2)
+        CUDA_DOCKER_TAG="11.4.3"
+        ;;
+    *)
+        CUDA_DOCKER_TAG=$CUDA_VERSION
+        ;;
+esac
 
 if (id -nG | grep -qw "docker") || [ "$USER" == "root" ]; then
-    echo "Building Docker container with CUDA Version: $CUDA_VERSION, NVIDIA Driver: $NVIDIA_VERSION"
-    docker build  --build-arg NVIDIA_VERSION=$NVIDIA_VERSION --build-arg CUDA_VERSION=$CUDA_VERSION  -t ai2thor-docker:latest .
+    echo "Building Docker container with CUDA Version: $CUDA_DOCKER_TAG, NVIDIA Driver: $NVIDIA_VERSION"
+    docker build  --build-arg NVIDIA_VERSION=$NVIDIA_VERSION --build-arg CUDA_VERSION=$CUDA_DOCKER_TAG  -t ai2thor-docker:latest .
 else
     echo "Error: Unable to run build.sh. Please use sudo to run build.sh or add $USER to the docker group."
     exit 1

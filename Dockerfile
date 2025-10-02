@@ -1,6 +1,7 @@
 ARG CUDA_VERSION
 
-FROM nvidia/cuda:$CUDA_VERSION-devel-ubuntu18.04
+# FROM nvidia/cuda:$CUDA_VERSION-devel-ubuntu18.04
+FROM nvidia/cuda:$CUDA_VERSION-devel-ubuntu20.04
 ARG NVIDIA_VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -11,7 +12,9 @@ WORKDIR $APP_HOME
 COPY requirements.txt scripts/install_nvidia.sh /app/
 RUN pip3 install --upgrade pip
 
-RUN pip3 install -r requirements.txt && python3 -c "import os; import ai2thor.build; ai2thor.build.Build('CloudRendering', ai2thor.build.DEFAULT_CLOUDRENDERING_COMMIT_ID, False, releases_dir=os.path.join(os.path.expanduser('~'), '.ai2thor/releases')).download()"
+# # RUN pip3 install -r requirements.txt && python3 -c "import os; import ai2thor.build; ai2thor.build.Build('CloudRendering', ai2thor.build.DEFAULT_CLOUDRENDERING_COMMIT_ID, False, releases_dir=os.path.join(os.path.expanduser('~'), '.ai2thor/releases')).download()"
+RUN pip3 install -r requirements.txt && python3 -c "import os; import ai2thor.build; ai2thor.build.Build('CloudRendering', '22d62af5da45708e7bc40bf07a861e7397f9d2f9', False, releases_dir=os.path.join(os.path.expanduser('~'), '.ai2thor/releases')).download()"
+# RUN pip3 install -r requirements.txt && python3 -c "import os; import ai2thor.build; import ai2thor; commit_id = ai2thor.__version__.split('+')[1] if '+' in ai2thor.__version__ else '22d62af5da45708e7bc40bf07a861e7397f9d2f9'; ai2thor.build.Build('CloudRendering', commit_id, False, releases_dir=os.path.join(os.path.expanduser('~'), '.ai2thor/releases')).download()"
 RUN NVIDIA_VERSION=$NVIDIA_VERSION /app/install_nvidia.sh
 
 COPY example_agent.py ./
